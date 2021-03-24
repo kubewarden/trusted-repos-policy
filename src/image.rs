@@ -236,13 +236,25 @@ mod tests {
         let image = Image::new("example.com/image:tag")?;
         assert_eq!(image.registry, Some("example.com".into()));
 
+        let image = Image::new("example.com/path/to/image:tag")?;
+        assert_eq!(image.registry, Some("example.com".into()));
+
         let image = Image::new("example.com:5000/image:tag")?;
+        assert_eq!(image.registry, Some("example.com:5000".into()));
+
+        let image = Image::new("example.com:5000/path/to/image:tag")?;
         assert_eq!(image.registry, Some("example.com:5000".into()));
 
         let image = Image::new("10.0.0.100/image:tag")?;
         assert_eq!(image.registry, Some("10.0.0.100".into()));
 
+        let image = Image::new("10.0.0.100/path/to/image:tag")?;
+        assert_eq!(image.registry, Some("10.0.0.100".into()));
+
         let image = Image::new("10.0.0.100:5000/image:tag")?;
+        assert_eq!(image.registry, Some("10.0.0.100:5000".into()));
+
+        let image = Image::new("10.0.0.100:5000/path/to/image:tag")?;
         assert_eq!(image.registry, Some("10.0.0.100:5000".into()));
 
         Ok(())
