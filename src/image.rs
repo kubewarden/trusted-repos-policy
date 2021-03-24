@@ -117,59 +117,116 @@ mod tests {
         let image = Image::new("image")?;
         assert_eq!(image, "image".to_string());
 
+        let image = Image::new("path/to/image")?;
+        assert_eq!(image, "path/to/image".to_string());
+
         let image = Image::new("image:tag")?;
         assert_eq!(image, "image:tag".to_string());
+
+        let image = Image::new("path/to/image:tag")?;
+        assert_eq!(image, "path/to/image:tag".to_string());
 
         let image = Image::new("example.com/image")?;
         assert_eq!(image, "example.com/image".to_string());
 
+        let image = Image::new("example.com/path/to/image")?;
+        assert_eq!(image, "example.com/path/to/image".to_string());
+
         let image = Image::new("example.com/image:tag")?;
         assert_eq!(image, "example.com/image:tag".to_string());
+
+        let image = Image::new("example.com/path/to/image:tag")?;
+        assert_eq!(image, "example.com/path/to/image:tag".to_string());
 
         let image = Image::new("example.com:5000/image")?;
         assert_eq!(image, "example.com:5000/image".to_string());
 
+        let image = Image::new("example.com:5000/path/to/image")?;
+        assert_eq!(image, "example.com:5000/path/to/image".to_string());
+
         let image = Image::new("example.com:5000/image:tag")?;
         assert_eq!(image, "example.com:5000/image:tag".to_string());
+
+        let image = Image::new("example.com:5000/path/to/image:tag")?;
+        assert_eq!(image, "example.com:5000/path/to/image:tag".to_string());
 
         let image = Image::new("10.0.0.100/image")?;
         assert_eq!(image, "10.0.0.100/image".to_string());
 
+        let image = Image::new("10.0.0.100/path/to/image")?;
+        assert_eq!(image, "10.0.0.100/path/to/image".to_string());
+
         let image = Image::new("10.0.0.100/image:tag")?;
         assert_eq!(image, "10.0.0.100/image:tag".to_string());
+
+        let image = Image::new("10.0.0.100/path/to/image:tag")?;
+        assert_eq!(image, "10.0.0.100/path/to/image:tag".to_string());
 
         let image = Image::new("10.0.0.100:5000/image")?;
         assert_eq!(image, "10.0.0.100:5000/image".to_string());
 
+        let image = Image::new("10.0.0.100:5000/path/to/image")?;
+        assert_eq!(image, "10.0.0.100:5000/path/to/image".to_string());
+
         let image = Image::new("10.0.0.100:5000/image:tag")?;
         assert_eq!(image, "10.0.0.100:5000/image:tag".to_string());
+
+        let image = Image::new("10.0.0.100:5000/path/to/image:tag")?;
+        assert_eq!(image, "10.0.0.100:5000/path/to/image:tag".to_string());
 
         let image = Image::new("example.com/image:tag@sha256:3fc9b689459d738f8c88a3a48aa9e33542016b7a4052e001aaa536fca74813cb")?;
         assert_eq!(image, "example.com/image:tag@sha256:3fc9b689459d738f8c88a3a48aa9e33542016b7a4052e001aaa536fca74813cb".to_string());
 
+        let image = Image::new("example.com/path/to/image:tag@sha256:3fc9b689459d738f8c88a3a48aa9e33542016b7a4052e001aaa536fca74813cb")?;
+        assert_eq!(image, "example.com/path/to/image:tag@sha256:3fc9b689459d738f8c88a3a48aa9e33542016b7a4052e001aaa536fca74813cb".to_string());
+
         let image = Image::new("example.com/image@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049")?;
         assert_eq!(image, "example.com/image@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049".to_string());
+
+        let image = Image::new("example.com/path/to/image@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049")?;
+        assert_eq!(image, "example.com/path/to/image@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049".to_string());
 
         let image = Image::new("example.com/image:tag@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049")?;
         assert_eq!(image, "example.com/image:tag@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049".to_string());
 
+        let image = Image::new("example.com/path/to/image:tag@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049")?;
+        assert_eq!(image, "example.com/path/to/image:tag@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049".to_string());
+
         let image = Image::new("example.com:5000/image@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049")?;
         assert_eq!(image, "example.com:5000/image@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049".to_string());
+
+        let image = Image::new("example.com:5000/path/to/image@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049")?;
+        assert_eq!(image, "example.com:5000/path/to/image@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049".to_string());
 
         let image = Image::new("example.com:5000/image:tag@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049")?;
         assert_eq!(image, "example.com:5000/image:tag@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049".to_string());
 
+        let image = Image::new("example.com:5000/path/to/image:tag@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049")?;
+        assert_eq!(image, "example.com:5000/path/to/image:tag@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049".to_string());
+
         let image = Image::new("10.0.0.100/image@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049")?;
         assert_eq!(image, "10.0.0.100/image@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049".to_string());
+
+        let image = Image::new("10.0.0.100/path/to/image@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049")?;
+        assert_eq!(image, "10.0.0.100/path/to/image@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049".to_string());
 
         let image = Image::new("10.0.0.100/image:tag@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049")?;
         assert_eq!(image, "10.0.0.100/image:tag@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049".to_string());
 
+        let image = Image::new("10.0.0.100/path/to/image:tag@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049")?;
+        assert_eq!(image, "10.0.0.100/path/to/image:tag@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049".to_string());
+
         let image = Image::new("10.0.0.100:5000/image@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049")?;
         assert_eq!(image, "10.0.0.100:5000/image@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049".to_string());
 
+        let image = Image::new("10.0.0.100:5000/path/to/image@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049")?;
+        assert_eq!(image, "10.0.0.100:5000/path/to/image@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049".to_string());
+
         let image = Image::new("10.0.0.100:5000/image:tag@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049")?;
         assert_eq!(image, "10.0.0.100:5000/image:tag@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049".to_string());
+
+        let image = Image::new("10.0.0.100:5000/path/to/image:tag@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049")?;
+        assert_eq!(image, "10.0.0.100:5000/path/to/image:tag@sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049".to_string());
 
         Ok(())
     }
