@@ -2,6 +2,7 @@ extern crate wapc_guest as guest;
 use guest::prelude::*;
 
 extern crate kubewarden_policy_sdk as kubewarden;
+use kubewarden::cluster_context::ClusterContext;
 use kubewarden::request::ValidationRequest;
 
 extern crate regex;
@@ -26,37 +27,47 @@ fn validate(payload: &[u8]) -> CallResult {
     let validation_request: ValidationRequest<Settings> = ValidationRequest::new(payload)?;
 
     match serde_json::from_value::<apicore::Pod>(validation_request.request.object) {
-        Ok(pod) => match validation_request.settings.is_pod_accepted(&pod) {
-            PodEvaluationResult::Allowed => kubewarden::accept_request(),
-            PodEvaluationResult::NotAllowed(rejection_reasons) => {
-                let mut errors = Vec::new();
-                if !rejection_reasons.registries_not_allowed.is_empty() {
-                    errors.push(format!(
-                        "registries not allowed: {}",
-                        rejection_reasons.registries_not_allowed.join(", ")
-                    ));
+        Ok(pod) => {
+            let pod_namespace =
+                pod.metadata.namespace.as_ref().and_then(|namespace| {
+                    ClusterContext::namespace(&namespace).unwrap_or_default()
+                });
+
+            match validation_request
+                .settings
+                .is_pod_accepted(&pod, pod_namespace.as_ref())
+            {
+                PodEvaluationResult::Allowed => kubewarden::accept_request(),
+                PodEvaluationResult::NotAllowed(rejection_reasons) => {
+                    let mut errors = Vec::new();
+                    if !rejection_reasons.registries_not_allowed.is_empty() {
+                        errors.push(format!(
+                            "registries not allowed: {}",
+                            rejection_reasons.registries_not_allowed.join(", ")
+                        ));
+                    }
+                    if !rejection_reasons.tags_not_allowed.is_empty() {
+                        errors.push(format!(
+                            "tags not allowed: {}",
+                            rejection_reasons.tags_not_allowed.join(", ")
+                        ))
+                    }
+                    if !rejection_reasons.images_not_allowed.is_empty() {
+                        errors.push(format!(
+                            "images not allowed: {}",
+                            rejection_reasons.images_not_allowed.join(", ")
+                        ))
+                    }
+                    kubewarden::reject_request(
+                        Some(format!(
+                            "not allowed, reported errors: {}",
+                            errors.join("; ")
+                        )),
+                        None,
+                    )
                 }
-                if !rejection_reasons.tags_not_allowed.is_empty() {
-                    errors.push(format!(
-                        "tags not allowed: {}",
-                        rejection_reasons.tags_not_allowed.join(", ")
-                    ))
-                }
-                if !rejection_reasons.images_not_allowed.is_empty() {
-                    errors.push(format!(
-                        "images not allowed: {}",
-                        rejection_reasons.images_not_allowed.join(", ")
-                    ))
-                }
-                kubewarden::reject_request(
-                    Some(format!(
-                        "not allowed, reported errors: {}",
-                        errors.join("; ")
-                    )),
-                    None,
-                )
             }
-        },
+        }
         Err(_) => kubewarden::accept_request(),
     }
 }

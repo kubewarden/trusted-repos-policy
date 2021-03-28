@@ -48,7 +48,11 @@ pub(crate) enum PodEvaluationResult {
 }
 
 impl Settings {
-    pub(crate) fn is_pod_accepted(&self, pod: &apicore::Pod) -> PodEvaluationResult {
+    pub(crate) fn is_pod_accepted(
+        &self,
+        pod: &apicore::Pod,
+        namespace: Option<&apicore::Namespace>,
+    ) -> PodEvaluationResult {
         let mut rejection_reasons = PodRejectionReasons::default();
 
         pod.spec
@@ -69,18 +73,18 @@ impl Settings {
                                 let image = Image::new(container_image);
                                 if let Ok(image) = image {
                                     if let Some(registry) = &image.registry {
-                                        if !self.is_allowed_registry(&registry) {
+                                        if !self.is_allowed_registry(&registry, namespace) {
                                             rejection_reasons
                                                 .registries_not_allowed
                                                 .push(registry.clone())
                                         }
                                     }
                                     if let Some(tag) = &image.tag {
-                                        if !self.is_allowed_tag(&tag) {
+                                        if !self.is_allowed_tag(&tag, namespace) {
                                             rejection_reasons.tags_not_allowed.push(tag.clone());
                                         }
                                     }
-                                    if !self.is_allowed_image(&image) {
+                                    if !self.is_allowed_image(&image, namespace) {
                                         rejection_reasons.images_not_allowed.push(image.image);
                                     }
                                 }
@@ -97,7 +101,10 @@ impl Settings {
             .unwrap_or(PodEvaluationResult::Allowed)
     }
 
-    fn is_allowed_registry(&self, registry: &str) -> bool {
+    fn is_allowed_registry(&self, registry: &str, namespace: Option<&apicore::Namespace>) -> bool {
+        // TODO(ereslibre): compute allowed/rejected registries from
+        // namespace annotation -- mix those with the global settings,
+        // if any was provided
         self.registries
             .as_ref()
             .map(|registries| {
@@ -117,7 +124,10 @@ impl Settings {
             .unwrap_or(false)
     }
 
-    fn is_allowed_tag(&self, tag: &str) -> bool {
+    fn is_allowed_tag(&self, tag: &str, namespace: Option<&apicore::Namespace>) -> bool {
+        // TODO(ereslibre): compute rejected tags from namespace
+        // annotation -- mix those with the global settings, if any
+        // was provided
         self.tags
             .as_ref()
             .map(|tags| {
@@ -131,7 +141,10 @@ impl Settings {
             .unwrap_or(false)
     }
 
-    fn is_allowed_image(&self, image: &Image) -> bool {
+    fn is_allowed_image(&self, image: &Image, namespace: Option<&apicore::Namespace>) -> bool {
+        // TODO(ereslibre): compute allowed/rejected images from
+        // namespace annotation -- mix those with the global settings,
+        // if any was provided
         self.images
             .as_ref()
             .map(|images| {
@@ -159,7 +172,7 @@ mod tests {
     #[test]
     fn test_is_allowed_registry() {
         let settings: Settings = Default::default();
-        assert!(settings.is_allowed_registry(&String::from("docker.io")));
+        assert!(settings.is_allowed_registry(&String::from("docker.io"), None));
 
         let settings = Settings {
             registries: Some(Registries {
@@ -168,9 +181,9 @@ mod tests {
             }),
             ..Default::default()
         };
-        assert!(settings.is_allowed_registry(&String::from("allowed-registry.com")));
-        assert!(!settings.is_allowed_registry(&String::from("allowed-registry.com:5001")));
-        assert!(!settings.is_allowed_registry(&String::from("docker.io")));
+        assert!(settings.is_allowed_registry(&String::from("allowed-registry.com"), None));
+        assert!(!settings.is_allowed_registry(&String::from("allowed-registry.com:5001"), None));
+        assert!(!settings.is_allowed_registry(&String::from("docker.io"), None));
 
         let settings = Settings {
             registries: Some(Registries {
@@ -179,15 +192,17 @@ mod tests {
             }),
             ..Default::default()
         };
-        assert!(settings.is_allowed_registry(&String::from("docker.io")));
-        assert!(settings.is_allowed_registry(&String::from("non-forbidden-registry.com:5001")));
-        assert!(!settings.is_allowed_registry(&String::from("forbidden-registry.com")));
+        assert!(settings.is_allowed_registry(&String::from("docker.io"), None));
+        assert!(
+            settings.is_allowed_registry(&String::from("non-forbidden-registry.com:5001"), None)
+        );
+        assert!(!settings.is_allowed_registry(&String::from("forbidden-registry.com"), None));
     }
 
     #[test]
     fn test_is_allowed_tag() {
         let settings: Settings = Default::default();
-        assert!(settings.is_allowed_tag(&String::from("latest")));
+        assert!(settings.is_allowed_tag(&String::from("latest"), None));
 
         let settings = Settings {
             tags: Some(Tags {
@@ -195,7 +210,7 @@ mod tests {
             }),
             ..Default::default()
         };
-        assert!(!settings.is_allowed_tag(&String::from("latest")));
+        assert!(!settings.is_allowed_tag(&String::from("latest"), None));
     }
 
     #[test]
