@@ -13,6 +13,6 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 k8s-openapi = { git = "https://github.com/Arnavion/k8s-openapi-codegen", tag = "v0.9.0", features = ["api", "v1_18"] }
 wapc-guest = "0.4.0"
-chimera-kube-policy-sdk = { git = "https://github.com/chimera-kube/policy-sdk-rust.git", branch = "main" }
+kubewarden-policy-sdk = "0.1.0"
 url = "2.2.1"
 regex = "1.4.3"

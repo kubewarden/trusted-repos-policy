@@ -1,4 +1,4 @@
-Chimera policy that allows to restrict what repositories, tags and
+Kubewarden policy that allows to restrict what repositories, tags and
 images pods in your cluster can refer to.
 
 # What the policy allows to restrict
