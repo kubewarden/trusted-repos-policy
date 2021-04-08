@@ -1,6 +1,8 @@
 use k8s_openapi::api::core::v1 as apicore;
 use serde::{Deserialize, Serialize};
 
+use kubewarden::settings::Validatable;
+
 use crate::Image;
 
 #[derive(Serialize, Deserialize, Default, Debug)]
@@ -45,6 +47,25 @@ impl PodRejectionReasons {
 pub(crate) enum PodEvaluationResult {
     Allowed,
     NotAllowed(PodRejectionReasons),
+}
+
+impl Validatable for Settings {
+    fn validate(&self) -> Result<(), String> {
+        if let Some(registries) = &self.registries {
+            if registries.allow.is_some() == registries.reject.is_some() {
+                return Err("only one of registries allow or reject can be provided, and one must be provided".to_string());
+            }
+        }
+        if let Some(images) = &self.images {
+            if images.allow.is_some() == images.reject.is_some() {
+                return Err(
+                    "only one of images allow or reject can be provided, and one must be provided"
+                        .to_string(),
+                );
+            }
+        }
+        Ok(())
+    }
 }
 
 impl Settings {
@@ -218,5 +239,145 @@ mod tests {
         println!("{:?}", image);
         let image = Image::new("redis:v1.2");
         println!("{:?}", image);
+    }
+
+    #[test]
+    fn valid_allowed_registries() {
+        assert_eq!(
+            Settings {
+                registries: Some(Registries {
+                    allow: Some(vec!("allowed-registry.com".to_string())),
+                    reject: None,
+                },),
+                tags: None,
+                images: None,
+            }
+            .validate(),
+            Ok(()),
+        );
+    }
+
+    #[test]
+    fn valid_rejected_registries() {
+        assert_eq!(
+            Settings {
+                registries: Some(Registries {
+                    allow: None,
+                    reject: Some(vec!("rejected-registry.com".to_string())),
+                },),
+                tags: None,
+                images: None,
+            }
+            .validate(),
+            Ok(()),
+        );
+    }
+
+    #[test]
+    fn invalid_allowed_and_rejected_registries() {
+        assert_eq!(
+            Settings {
+                registries: Some(Registries {
+                    allow: Some(vec!("allowed-registry.com".to_string())),
+                    reject: Some(vec!("rejected-registry.com".to_string())),
+                },),
+                tags: None,
+                images: None,
+            }
+            .validate(),
+            Err(
+                "only one of registries allow or reject can be provided, and one must be provided"
+                    .to_string()
+            ),
+        );
+    }
+
+    #[test]
+    fn invalid_none_allowed_nor_rejected_registries() {
+        assert_eq!(
+            Settings {
+                registries: Some(Registries {
+                    allow: None,
+                    reject: None,
+                },),
+                tags: None,
+                images: None,
+            }
+            .validate(),
+            Err(
+                "only one of registries allow or reject can be provided, and one must be provided"
+                    .to_string()
+            ),
+        );
+    }
+
+    #[test]
+    fn valid_allowed_images() {
+        assert_eq!(
+            Settings {
+                registries: None,
+                tags: None,
+                images: Some(Images {
+                    allow: Some(vec!("some-registry.com/some/allowed/image:tag".to_string())),
+                    reject: None,
+                },),
+            }
+            .validate(),
+            Ok(()),
+        );
+    }
+
+    #[test]
+    fn valid_rejected_images() {
+        assert_eq!(
+            Settings {
+                registries: None,
+                tags: None,
+                images: Some(Images {
+                    allow: None,
+                    reject: Some(vec!("some-registry.com/some/rejected/image:tag".to_string())),
+                },),
+            }
+            .validate(),
+            Ok(()),
+        );
+    }
+
+    #[test]
+    fn invalid_allowed_and_rejected_images() {
+        assert_eq!(
+            Settings {
+                registries: None,
+                tags: None,
+                images: Some(Images {
+                    allow: Some(vec!("some-registry.com/some/allowed/image:tag".to_string())),
+                    reject: Some(vec!("some-registry.com/some/rejected/image:tag".to_string())),
+                },),
+            }
+            .validate(),
+            Err(
+                "only one of images allow or reject can be provided, and one must be provided"
+                    .to_string()
+            ),
+        );
+    }
+
+    #[test]
+    fn invalid_none_allowed_nor_rejected_images() {
+        assert_eq!(
+            Settings {
+                registries: None,
+                tags: None,
+                images: Some(Images {
+                    allow: None,
+                    reject: None,
+                },),
+            }
+            .validate(),
+            Err(
+                "only one of images allow or reject can be provided, and one must be provided"
+                    .to_string()
+            ),
+        );
     }
 }
