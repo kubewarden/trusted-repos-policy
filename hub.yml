@@ -1,0 +1,15 @@
+name: trusted-repo-source
+description: Restrict what registries, tags and images can be used
+homepage: https://github.com/kubewarden/trusted-repos-policy
+author:
+  name: Kubewarden devs
+  homepage: https://github.com/kubewarden
+download:
+  registry: ghcr.io/kubewarden/policies/trusted-repos:latest
+keywords:
+  - Image
+  - Registry
+  - Tag
+resources:
+  - Pod
+mutation: false
