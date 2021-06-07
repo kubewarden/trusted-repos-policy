@@ -1,6 +1,6 @@
 [package]
 name = "trusted-repos-policy"
-version = "0.1.0"
+version = "0.1.3"
 authors = ["Rafael Fernández López <ereslibre@ereslibre.es>"]
 edition = "2018"
 
