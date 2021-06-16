@@ -30,7 +30,7 @@ jobs:
       WASM_BINARY_NAME: trusted_repos_policy
       OCI_TARGET: ghcr.io/kubewarden/policies/trusted-repos
       METADATA_FILE: metadata.yml
-      KWCTL_VERSION: v0.1.4
+      KWCTL_VERSION: v0.1.9
     steps:
       -
         name: Checkout code
