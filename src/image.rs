@@ -50,7 +50,7 @@ impl Image {
     where
         T: Into<String> + Display + Copy + Clone,
     {
-        let orig_image = image.clone().into();
+        let orig_image = image.into();
         let image_with_scheme = format!("registry://{}", image);
         let url = Url::parse(&image_with_scheme);
 
