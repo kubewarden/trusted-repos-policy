@@ -90,14 +90,14 @@ impl Settings {
                                 let image = Image::new(container_image);
                                 if let Ok(image) = image {
                                     if let Some(registry) = &image.registry {
-                                        if !self.is_allowed_registry(&registry) {
+                                        if !self.is_allowed_registry(registry) {
                                             rejection_reasons
                                                 .registries_not_allowed
                                                 .push(registry.clone())
                                         }
                                     }
                                     if let Some(tag) = &image.tag {
-                                        if !self.is_allowed_tag(&tag) {
+                                        if !self.is_allowed_tag(tag) {
                                             rejection_reasons.tags_not_allowed.push(tag.clone());
                                         }
                                     }
