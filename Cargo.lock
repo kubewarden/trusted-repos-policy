@@ -112,9 +112,9 @@ dependencies = [
 
 [[package]]
 name = "kubewarden-policy-sdk"
-version = "0.2.2"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "23e8d71498a7ffad69a26cabb39715e490fba2a6878e96fae87cef283f2ff74a"
+checksum = "9f866fd0ab46019965538c69370bb9c72ac904d66f78f5469c3d56d4d299e1f5"
 dependencies = [
  "anyhow",
  "k8s-openapi",
@@ -123,6 +123,7 @@ dependencies = [
  "num-traits",
  "serde",
  "serde_json",
+ "slog",
  "wapc-guest",
 ]
 
@@ -333,6 +334,12 @@ dependencies = [
  "ryu",
  "serde",
 ]
+
+[[package]]
+name = "slog"
+version = "2.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8347046d4ebd943127157b94d63abb990fcf729dc4e9978927fdf4ac3c998d06"
 
 [[package]]
 name = "syn"
