@@ -1,5 +1,5 @@
-extern crate wapc_guest as guest;
 use guest::prelude::*;
+use kubewarden_policy_sdk::wapc_guest as guest;
 
 extern crate kubewarden_policy_sdk as kubewarden;
 use kubewarden::{protocol_version_guest, request::ValidationRequest, validate_settings};
@@ -55,6 +55,8 @@ fn validate(payload: &[u8]) -> CallResult {
                         "not allowed, reported errors: {}",
                         errors.join("; ")
                     )),
+                    None,
+                    None,
                     None,
                 )
             }
