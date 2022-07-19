@@ -1,0 +1,34 @@
+---
+version: 0.1.7
+name: trusted-repos
+displayName: Trusted Repos
+createdAt: '2022-07-19T16:26:18+02:00'
+description: Restrict what registries, tags and images can be used
+license: Apache-2.0
+homeURL: https://github.com/kubewarden/trusted-repos-policy
+containersImages:
+- name: policy
+  image: ghcr.io/kubewarden/policies/trusted-repos:v0.1.7
+install: |
+  The policy can be obtained using [`kwctl`](https://github.com/kubewarden/kwctl/):
+
+  ```console
+  kwctl pull ghcr.io/kubewarden/policies/trusted-repos:v0.1.7
+  ```
+keywords:
+- image
+- registry
+- tag
+links:
+- name: policy
+  url: https://github.com/kubewarden/trusted-repos-policy/releases/download/v0.1.7/policy.wasm
+- name: source
+  url: https://github.com/kubewarden/trusted-repos-policy
+provider:
+  name: kubewarden
+recommendations:
+- url: https://artifacthub.io/packages/helm/kubewarden/kubewarden-controller
+annotations:
+  kubewarden/resources: Pod
+  kubewarden/mutation: false
+  kubewarden/contextAware: false
