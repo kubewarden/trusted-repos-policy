@@ -9,12 +9,6 @@ homeURL: https://github.com/kubewarden/trusted-repos-policy
 containersImages:
 - name: policy
   image: ghcr.io/kubewarden/policies/trusted-repos:v0.1.7
-install: |
-  The policy can be obtained using [`kwctl`](https://github.com/kubewarden/kwctl/):
-
-  ```console
-  kwctl pull ghcr.io/kubewarden/policies/trusted-repos:v0.1.7
-  ```
 keywords:
 - image
 - registry
