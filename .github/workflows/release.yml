@@ -26,5 +26,3 @@ jobs:
     with:
       input-wasm: trusted_repos_policy
       oci-target: ghcr.io/${{ github.repository_owner }}/policies/trusted-repos
-    secrets:
-      workflow-pat: ${{ secrets.WORKFLOW_PAT }}
