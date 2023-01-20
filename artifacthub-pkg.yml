@@ -1,21 +1,21 @@
 ---
-version: 0.1.7
+version: 0.1.8
 name: trusted-repos
 displayName: Trusted Repos
-createdAt: '2022-07-19T16:26:18+02:00'
+createdAt: '2023-01-19T14:46:21+02:00'
 description: Restrict what registries, tags and images can be used
 license: Apache-2.0
 homeURL: https://github.com/kubewarden/trusted-repos-policy
 containersImages:
 - name: policy
-  image: ghcr.io/kubewarden/policies/trusted-repos:v0.1.7
+  image: ghcr.io/kubewarden/policies/trusted-repos:v0.1.8
 keywords:
 - image
 - registry
 - tag
 links:
 - name: policy
-  url: https://github.com/kubewarden/trusted-repos-policy/releases/download/v0.1.7/policy.wasm
+  url: https://github.com/kubewarden/trusted-repos-policy/releases/download/v0.1.8/policy.wasm
 - name: source
   url: https://github.com/kubewarden/trusted-repos-policy
 provider:
@@ -26,3 +26,73 @@ annotations:
   kubewarden/resources: Pod
   kubewarden/mutation: false
   kubewarden/contextAware: false
+  kubewarden/rules: |
+    rules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      resources: ["pods"]
+      operations: ["CREATE", "UPDATE"]
+  kubewarden/questions-ui: |
+    questions:
+    - default: null
+      description: >-
+        This policy allows you to restrict what repositories, tags, and images pods
+        in your cluster can refer to. The configuration allows you to mix and match
+        several filters: registries, tags, and images. When both an allow list and a
+        reject list is supported, only one can be provided at the same time for that
+        specific filter.
+      group: Settings
+      label: Description
+      required: false
+      hide_input: true
+      type: string
+      variable: description
+    - default: []
+      description: Allow or reject images coming from a specified registry.
+      group: Settings
+      label: Registries
+      hide_input: true
+      type: map[
+      variable: registries
+      subquestions:
+        - default: []
+          group: Settings
+          label: Allow
+          type: array[
+          variable: registries.allow
+        - default: []
+          group: Settings
+          label: Reject
+          type: array[
+          variable: registries.reject
+    - default: []
+      description: Reject a specified tag for all images
+      group: Settings
+      label: Tags
+      hide_input: true
+      type: map[
+      variable: tags
+      subquestions:
+        - default: []
+          group: Settings
+          label: Reject
+          type: array[
+          variable: tags.reject
+    - default: []
+      description: Accept or reject a specified image
+      group: Settings
+      label: Images
+      hide_input: true
+      type: map[
+      variable: images
+      subquestions:
+        - default: []
+          group: Settings
+          label: Allow
+          type: array[
+          variable: images.allow
+        - default: []
+          group: Settings
+          label: Reject
+          type: array[
+          variable: images.reject
