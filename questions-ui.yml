@@ -12,7 +12,7 @@ questions:
   hide_input: true
   type: string
   variable: description
-- default: []
+- default: {}
   description: Allow or reject images coming from a specified registry.
   group: Settings
   label: Registries
@@ -30,7 +30,7 @@ questions:
       label: Reject
       type: array[
       variable: registries.reject
-- default: []
+- default: {}
   description: Reject a specified tag for all images
   group: Settings
   label: Tags
@@ -43,7 +43,7 @@ questions:
       label: Reject
       type: array[
       variable: tags.reject
-- default: []
+- default: {}
   description: Accept or reject a specified image
   group: Settings
   label: Images
