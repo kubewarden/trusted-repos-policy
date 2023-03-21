@@ -1,21 +1,21 @@
 ---
-version: 0.1.8
+version: 0.1.9
 name: trusted-repos
 displayName: Trusted Repos
-createdAt: '2023-01-19T14:46:21+02:00'
+createdAt: '2023-03-20T20:23:44+00:00'
 description: Restrict what registries, tags and images can be used
 license: Apache-2.0
 homeURL: https://github.com/kubewarden/trusted-repos-policy
 containersImages:
 - name: policy
-  image: ghcr.io/kubewarden/policies/trusted-repos:v0.1.8
+  image: ghcr.io/kubewarden/policies/trusted-repos:v0.1.9
 keywords:
 - image
 - registry
 - tag
 links:
 - name: policy
-  url: https://github.com/kubewarden/trusted-repos-policy/releases/download/v0.1.8/policy.wasm
+  url: https://github.com/kubewarden/trusted-repos-policy/releases/download/v0.1.9/policy.wasm
 - name: source
   url: https://github.com/kubewarden/trusted-repos-policy
 provider:
@@ -47,7 +47,7 @@ annotations:
       hide_input: true
       type: string
       variable: description
-    - default: []
+    - default: {}
       description: Allow or reject images coming from a specified registry.
       group: Settings
       label: Registries
@@ -65,7 +65,7 @@ annotations:
           label: Reject
           type: array[
           variable: registries.reject
-    - default: []
+    - default: {}
       description: Reject a specified tag for all images
       group: Settings
       label: Tags
@@ -78,7 +78,7 @@ annotations:
           label: Reject
           type: array[
           variable: tags.reject
-    - default: []
+    - default: {}
       description: Accept or reject a specified image
       group: Settings
       label: Images
