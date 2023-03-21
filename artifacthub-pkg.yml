@@ -1,37 +1,42 @@
----
-version: 0.1.9
+# Kubewarden Artifacthub Package config
+#
+# Use this config to submit the policy to https://artifacthub.io.
+#
+# This config can be saved to its default location with:
+#   kwctl scaffold artifacthub > artifacthub-pkg.yml 
+version: 0.1.10
 name: trusted-repos
 displayName: Trusted Repos
-createdAt: '2023-03-20T20:23:44+00:00'
-description: Restrict what registries, tags and images can be used
+createdAt: 2023-03-21T10:35:02.206079558Z
+description: Kubewarden policy that restricts what registries, tags and images can pods on your cluster refer to
 license: Apache-2.0
 homeURL: https://github.com/kubewarden/trusted-repos-policy
 containersImages:
 - name: policy
-  image: ghcr.io/kubewarden/policies/trusted-repos:v0.1.9
+  image: ghcr.io/kubewarden/policies/trusted-repos:v0.1.10
 keywords:
 - image
 - registry
 - tag
 links:
 - name: policy
-  url: https://github.com/kubewarden/trusted-repos-policy/releases/download/v0.1.9/policy.wasm
+  url: https://github.com/kubewarden/trusted-repos-policy/releases/download/v0.1.10/policy.wasm
 - name: source
   url: https://github.com/kubewarden/trusted-repos-policy
+install: |
+  The policy can be obtained using [`kwctl`](https://github.com/kubewarden/kwctl):
+  ```console
+  kwctl pull ghcr.io/kubewarden/policies/trusted-repos:v0.1.10
+  ```
+maintainers:
+- name: Kubewarden developers
+  email: cncf-kubewarden-maintainers@lists.cncf.io
 provider:
   name: kubewarden
 recommendations:
 - url: https://artifacthub.io/packages/helm/kubewarden/kubewarden-controller
 annotations:
-  kubewarden/resources: Pod
-  kubewarden/mutation: false
-  kubewarden/contextAware: false
-  kubewarden/rules: |
-    rules:
-    - apiGroups: [""]
-      apiVersions: ["v1"]
-      resources: ["pods"]
-      operations: ["CREATE", "UPDATE"]
+  kubewarden/mutation: 'false'
   kubewarden/questions-ui: |
     questions:
     - default: null
@@ -96,3 +101,14 @@ annotations:
           label: Reject
           type: array[
           variable: images.reject
+  kubewarden/resources: Pod
+  kubewarden/rules: |
+    - apiGroups:
+      - ''
+      apiVersions:
+      - v1
+      resources:
+      - pods
+      operations:
+      - CREATE
+      - UPDATE
