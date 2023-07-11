@@ -4,29 +4,29 @@
 #
 # This config can be saved to its default location with:
 #   kwctl scaffold artifacthub > artifacthub-pkg.yml 
-version: 0.1.11
+version: 0.1.12
 name: trusted-repos
 displayName: Trusted Repos
-createdAt: 2023-03-24T16:05:46.37907134Z
+createdAt: 2023-07-10T16:09:47.043206461Z
 description: Kubewarden policy that restricts what registries, tags and images can pods on your cluster refer to
 license: Apache-2.0
 homeURL: https://github.com/kubewarden/trusted-repos-policy
 containersImages:
 - name: policy
-  image: ghcr.io/kubewarden/policies/trusted-repos:v0.1.11
+  image: ghcr.io/kubewarden/policies/trusted-repos:v0.1.12
 keywords:
 - image
 - registry
 - tag
 links:
 - name: policy
-  url: https://github.com/kubewarden/trusted-repos-policy/releases/download/v0.1.11/policy.wasm
+  url: https://github.com/kubewarden/trusted-repos-policy/releases/download/v0.1.12/policy.wasm
 - name: source
   url: https://github.com/kubewarden/trusted-repos-policy
 install: |
   The policy can be obtained using [`kwctl`](https://github.com/kubewarden/kwctl):
   ```console
-  kwctl pull ghcr.io/kubewarden/policies/trusted-repos:v0.1.11
+  kwctl pull ghcr.io/kubewarden/policies/trusted-repos:v0.1.12
   ```
 maintainers:
 - name: Kubewarden developers
