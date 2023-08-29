@@ -82,32 +82,30 @@ impl Settings {
                     .unwrap_or(&empty_containers);
                 let containers = &pod_spec.containers;
 
-                vec![init_containers, containers]
-                    .iter()
-                    .for_each(|containers| {
-                        containers.iter().for_each(|container| {
-                            if let Some(container_image) = &container.image {
-                                let image = Image::new(container_image);
-                                if let Ok(image) = image {
-                                    if let Some(registry) = &image.registry {
-                                        if !self.is_allowed_registry(registry) {
-                                            rejection_reasons
-                                                .registries_not_allowed
-                                                .push(registry.clone())
-                                        }
-                                    }
-                                    if let Some(tag) = &image.tag {
-                                        if !self.is_allowed_tag(tag) {
-                                            rejection_reasons.tags_not_allowed.push(tag.clone());
-                                        }
-                                    }
-                                    if !self.is_allowed_image(&image) {
-                                        rejection_reasons.images_not_allowed.push(image.image);
+                [init_containers, containers].iter().for_each(|containers| {
+                    containers.iter().for_each(|container| {
+                        if let Some(container_image) = &container.image {
+                            let image = Image::new(container_image);
+                            if let Ok(image) = image {
+                                if let Some(registry) = &image.registry {
+                                    if !self.is_allowed_registry(registry) {
+                                        rejection_reasons
+                                            .registries_not_allowed
+                                            .push(registry.clone())
                                     }
                                 }
+                                if let Some(tag) = &image.tag {
+                                    if !self.is_allowed_tag(tag) {
+                                        rejection_reasons.tags_not_allowed.push(tag.clone());
+                                    }
+                                }
+                                if !self.is_allowed_image(&image) {
+                                    rejection_reasons.images_not_allowed.push(image.image);
+                                }
                             }
-                        });
+                        }
                     });
+                });
 
                 if rejection_reasons.is_empty() {
                     PodEvaluationResult::Allowed
