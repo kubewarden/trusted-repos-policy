@@ -14,4 +14,4 @@ serde_json = "1.0"
 k8s-openapi = { version = "0.19.0", features = ["v1_27"] }
 kubewarden-policy-sdk = { version = "0.9.7", default-features = false }
 url = "2.4.1"
-regex = "1.9.4"
+regex = "1.9.5"
