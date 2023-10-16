@@ -7,7 +7,7 @@
 version: 0.1.12
 name: trusted-repos
 displayName: Trusted Repos
-createdAt: 2023-07-10T16:09:47.043206461Z
+createdAt: 2023-10-16T08:49:40.395958374Z
 description: Kubewarden policy that restricts what registries, tags and images can pods on your cluster refer to
 license: Apache-2.0
 homeURL: https://github.com/kubewarden/trusted-repos-policy
@@ -27,6 +27,10 @@ install: |
   The policy can be obtained using [`kwctl`](https://github.com/kubewarden/kwctl):
   ```console
   kwctl pull ghcr.io/kubewarden/policies/trusted-repos:v0.1.12
+  ```
+  Then, generate the policy manifest and tune it to your liking. For example:
+  ```console
+  kwctl scaffold manifest -t ClusterAdmissionPolicy registry://ghcr.io/kubewarden/policies/trusted-repos:v0.1.12
   ```
 maintainers:
 - name: Kubewarden developers
