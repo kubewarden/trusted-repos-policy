@@ -12,9 +12,10 @@ pub(crate) struct Image {
     pub(crate) sha256: Option<String>,
 }
 
-impl ToString for Image {
-    fn to_string(&self) -> String {
-        format!(
+impl Display for Image {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
             "{}{}{}{}",
             self.registry
                 .as_ref()
