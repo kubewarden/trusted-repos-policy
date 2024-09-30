@@ -1,0 +1,43 @@
+{
+  "uid": "1299d386-525b-4032-98ae-1949f69f9cfc",
+  "kind": {
+    "group": "batch",
+    "version": "v1",
+    "kind": "Job"
+  },
+  "resource": {
+    "group": "batch",
+    "version": "v1",
+    "resource": "jobs"
+  },
+  "object": {
+    "metadata": {
+      "name": "nginx"
+    },
+    "spec": {
+      "template": {
+        "spec": {
+          "containers": [
+            {
+              "image": "ghcr.io/kubewarden/test-verify-image-signatures:signed",
+              "name": "test-verify-image-signatures"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "operation": "CREATE",
+  "requestKind": {
+    "group": "batch",
+    "version": "v1",
+    "kind": "Job"
+  },
+  "userInfo": {
+    "username": "alice",
+    "uid": "alice-uid",
+    "groups": [
+      "system:authenticated"
+    ]
+  }
+}

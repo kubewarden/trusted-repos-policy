@@ -1,17 +1,21 @@
 [package]
 name = "trusted-repos-policy"
-version = "0.1.12"
-authors = ["Rafael Fernández López <ereslibre@ereslibre.es>"]
-edition = "2018"
+version = "0.2.0"
+authors = ["Kubewarden Developers <kubewarden@suse.de>"]
+edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
 anyhow = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
 k8s-openapi = { version = "0.23.0", features = ["v1_27"] }
-kubewarden-policy-sdk = { version = "0.11.0", default-features = false }
-url = "2.5.0"
-regex = "1.10.4"
+kubewarden-policy-sdk = { version = "0.11.1", default-features = false }
+lazy_static = "1.5"
+oci-spec = "0.7"
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+slog = "2.7"
+
+[dev-dependencies]
+rstest = "0.23"

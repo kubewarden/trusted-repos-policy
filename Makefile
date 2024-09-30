@@ -22,7 +22,7 @@ lint:
 
 .PHONY: e2e-tests
 e2e-tests: annotated-policy.wasm
-	@echo "Dummy target to allow using the reusable github actions to build, test and release policies"
+	bats e2e.bats
 
 .PHONY: test
 test: fmt lint
