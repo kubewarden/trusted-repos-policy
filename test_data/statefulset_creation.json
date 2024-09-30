@@ -1,0 +1,43 @@
+{
+  "uid": "1299d386-525b-4032-98ae-1949f69f9cfc",
+  "kind": {
+    "group": "apps",
+    "version": "v1",
+    "kind": "StatefulSet"
+  },
+  "resource": {
+    "group": "apps",
+    "version": "v1",
+    "resource": "statefulsets"
+  },
+  "object": {
+    "metadata": {
+      "name": "nginx"
+    },
+    "spec": {
+      "template": {
+        "spec": {
+          "containers": [
+            {
+              "image": "ghcr.io/kubewarden/test-verify-image-signatures:signed",
+              "name": "test-verify-image-signatures"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "operation": "CREATE",
+  "requestKind": {
+    "group": "apps",
+    "version": "v1",
+    "kind": "StatefulSet"
+  },
+  "userInfo": {
+    "username": "alice",
+    "uid": "alice-uid",
+    "groups": [
+      "system:authenticated"
+    ]
+  }
+}

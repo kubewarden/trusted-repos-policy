@@ -1,0 +1,48 @@
+{
+  "uid": "1299d386-525b-4032-98ae-1949f69f9cfc",
+  "kind": {
+    "group": "batch",
+    "kind": "CronJob",
+    "version": "v1"
+  },
+  "resource": {
+    "group": "batch",
+    "version": "v1",
+    "resource": "cronjobs"
+  },
+  "requestKind": {
+    "group": "batch",
+    "version": "v1",
+    "kind": "CronJob"
+  },
+  "userInfo": {
+    "username": "alice",
+    "uid": "alice-uid",
+    "groups": [
+      "system:authenticated"
+    ]
+  },
+  "operation": "CREATE",
+  "object": {
+    "metadata": {
+      "name": "nginx"
+    },
+    "spec": {
+      "schedule": "* * * * *",
+      "jobTemplate": {
+        "spec": {
+          "template": {
+            "spec": {
+              "containers": [
+                {
+                  "image": "ghcr.io/kubewarden/test-verify-image-signatures:signed",
+                  "name": "test-verify-image-signatures"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

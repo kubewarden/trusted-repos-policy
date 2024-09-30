@@ -1,6 +1,7 @@
 /target
 policy.wasm
 annotated-policy.wasm
+tarpaulin-report.html
 
 # Added by cargo
 #
