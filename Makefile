@@ -5,9 +5,6 @@ policy.wasm: $(SOURCE_FILES) Cargo.*
 	cargo build --target=wasm32-wasip1 --release
 	cp target/wasm32-wasip1/release/*.wasm policy.wasm
 
-artifacthub-pkg.yml: metadata.yml Cargo.toml
-	kwctl scaffold artifacthub --metadata-path metadata.yml --version $(VERSION) \
-		--questions-path questions-ui.yml --output artifacthub-pkg.yml
 
 annotated-policy.wasm: policy.wasm metadata.yml
 	kwctl annotate -m metadata.yml -u README.md -o annotated-policy.wasm policy.wasm
@@ -31,4 +28,3 @@ test: fmt lint
 .PHONY: clean
 clean:
 	cargo clean
-	rm -f policy.wasm annotated-policy.wasm artifacthub-pkg.yml
