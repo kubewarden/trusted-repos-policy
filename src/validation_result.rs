@@ -128,8 +128,7 @@ mod tests {
             for expected_error_msg in expected_error_msgs {
                 assert!(
                     rejection_message.contains(expected_error_msg),
-                    "expected error message not found: {}",
-                    expected_error_msg
+                    "expected error message not found: {expected_error_msg}"
                 );
             }
         }
