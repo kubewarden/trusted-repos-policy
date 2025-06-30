@@ -38,8 +38,7 @@ impl Tags {
 
         if !invalid_tags.is_empty() {
             return Err(format!(
-                "tags {:?} are invalid, they must be valid OCI tags",
-                invalid_tags
+                "tags {invalid_tags:?} are invalid, they must be valid OCI tags"
             ));
         }
 
@@ -150,7 +149,7 @@ mod tests {
 
         let result = registries.validate();
         if is_valid {
-            assert!(result.is_ok(), "{:?}", result);
+            assert!(result.is_ok(), "{result:?}");
         } else {
             assert!(result.is_err(), "was supposed to be invalid");
         }
@@ -183,7 +182,7 @@ mod tests {
 
         let result = images.validate();
         if is_valid {
-            assert!(result.is_ok(), "{:?}", result);
+            assert!(result.is_ok(), "{result:?}");
         } else {
             assert!(result.is_err(), "was supposed to be invalid");
         }
@@ -215,7 +214,7 @@ mod tests {
     fn deserialize_images(#[case] input: &str, #[case] valid: bool) {
         let image: Result<Images, _> = serde_json::from_str(input);
         if valid {
-            assert!(image.is_ok(), "{:?}", image);
+            assert!(image.is_ok(), "{image:?}");
         } else {
             assert!(image.is_err(), "was supposed to be invalid");
         }
@@ -232,7 +231,7 @@ mod tests {
 
         let result = tags.validate();
         if is_valid {
-            assert!(result.is_ok(), "{:?}", result);
+            assert!(result.is_ok(), "{result:?}");
         } else {
             assert!(result.is_err(), "was supposed to be invalid");
         }
@@ -275,7 +274,7 @@ mod tests {
     fn validate_settings(#[case] settings: Settings, #[case] is_valid: bool) {
         let result = settings.validate();
         if is_valid {
-            assert!(result.is_ok(), "{:?}", result);
+            assert!(result.is_ok(), "{result:?}");
         } else {
             assert!(result.is_err(), "was supposed to be invalid");
         }

@@ -225,8 +225,7 @@ mod tests {
         let expected_images: HashSet<&str> = expected_images.into_iter().collect();
         assert_eq!(
             images, expected_images,
-            "got {:?} instead of {:?}",
-            images, expected_images
+            "got {images:?} instead of {expected_images:?}"
         );
     }
 
@@ -277,8 +276,7 @@ mod tests {
         let result = validate_images(&images, &settings);
         assert_eq!(
             result, expected_result,
-            "got: {:?} instead of {:?}",
-            result, expected_result
+            "got: {result:?} instead of {expected_result:?}"
         );
     }
 
@@ -326,8 +324,7 @@ mod tests {
         let result = validate_images(&images, &settings);
         assert_eq!(
             result, expected_result,
-            "got: {:?} instead of {:?}",
-            result, expected_result
+            "got: {result:?} instead of {expected_result:?}"
         );
     }
 
@@ -375,8 +372,7 @@ mod tests {
         let result = validate_images(&images, &settings);
         assert_eq!(
             result, expected_result,
-            "got: {:?} instead of {:?}",
-            result, expected_result
+            "got: {result:?} instead of {expected_result:?}"
         );
     }
 
@@ -445,8 +441,7 @@ mod tests {
         let result = validate_images(&images, &settings);
         assert_eq!(
             result, expected_result,
-            "got: {:?} instead of {:?}",
-            result, expected_result
+            "got: {result:?} instead of {expected_result:?}"
         );
     }
 
@@ -514,8 +509,7 @@ mod tests {
         let result = validate_images(&images, &settings);
         assert_eq!(
             result, expected_result,
-            "got: {:?} instead of {:?}",
-            result, expected_result
+            "got: {result:?} instead of {expected_result:?}"
         );
     }
 }
