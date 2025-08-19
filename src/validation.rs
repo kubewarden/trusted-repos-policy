@@ -441,7 +441,7 @@ mod tests {
         let result = validate_images(&images, &settings);
         assert_eq!(
             result, expected_result,
-            "got: {result:?} instead of {expected_result:?}"
+            r#"got: {result:?} instead of {expected_result:?}"#
         );
     }
 

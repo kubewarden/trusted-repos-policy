@@ -38,7 +38,7 @@ impl Tags {
 
         if !invalid_tags.is_empty() {
             return Err(format!(
-                "tags {invalid_tags:?} are invalid, they must be valid OCI tags"
+                "tags {invalid_tags:?} are invalid, they must be valid OCI tags",
             ));
         }
 
