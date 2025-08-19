@@ -38,7 +38,7 @@ impl Tags {
 
         if !invalid_tags.is_empty() {
             return Err(format!(
-                "tags {invalid_tags:?} are invalid, they must be valid OCI tags"
+                "tags {invalid_tags:?} are invalid, they must be valid OCI tags",
             ));
         }
 
@@ -50,6 +50,18 @@ impl Tags {
 /// the `Deserialize` trait to be able to use it in the `Settings` struct.
 #[derive(Debug, Hash, PartialEq, Eq, Clone)]
 pub struct ImageRef(oci_spec::distribution::Reference);
+impl ImageRef {
+    pub fn new(reference: oci_spec::distribution::Reference) -> Self {
+        ImageRef(reference)
+    }
+
+    pub fn repository(&self) -> &str {
+        self.0.repository()
+    }
+    pub fn registry(&self) -> &str {
+        self.0.registry()
+    }
+}
 
 impl From<Reference> for ImageRef {
     fn from(reference: Reference) -> Self {
