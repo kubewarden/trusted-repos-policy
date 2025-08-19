@@ -130,7 +130,42 @@ fn is_allowed_image(image_ref: &ImageRef, settings: &Settings) -> bool {
     }
 
     if !settings.images.allow.is_empty() {
-        return settings.images.allow.contains(image_ref);
+        // Accept if the allow list contains either:
+        // - The full image ref (exact match)
+        //
+        // - The image repository, without registry, nor tag, nor digest:
+        //   allow "nginx" matches "nginx:1.21", "nginx:latest", "docker.io/library:nginx:1.21"
+        //
+        // - The image registry+repository, without tag nor digest:
+        //   allow "quay.io/coreos/etcd" matches "quay.io/coreos/etcd:1.21", "quay.io/coreos/etcd:latest"
+        //   allow "nginx" matches "nginx:1.21", "nginx:latest", "docker.io/library:nginx:1.21"
+
+        let allow = &settings.images.allow;
+
+        // Check for exact match
+        if allow.contains(image_ref) {
+            return true;
+        }
+
+        // Check for repository match (no registry, no tag, no digest)
+        let repo_ref = Reference::from_str(image_ref.repository())
+            .ok()
+            .map(ImageRef::new);
+        if let Some(repo_ref) = repo_ref {
+            if allow.contains(&repo_ref) {
+                return true;
+            }
+        }
+
+        // check for registry + repository match (no tag, no digest)
+        let registry_repo = format!("{}/{}", image_ref.registry(), image_ref.repository());
+        if let Ok(registry_repo_ref) = Reference::from_str(&registry_repo) {
+            if allow.contains(&ImageRef::new(registry_repo_ref)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     true
@@ -396,7 +431,7 @@ mod tests {
                 "docker.io/alpine:1.0.0",
                 "quay.io/coreos/etcd:v3.4.12",
             ]),
-        )]
+    )]
     #[case::image_part_of_the_allow_list(
         vec![
             "ghcr.io/kubewarden/policy-server:1.0.0",
@@ -408,6 +443,33 @@ mod tests {
             "quay.io/coreos/etcd:v3.4.12@sha256:7ed2739c96eb16de3d7169e2a0aa4ccf3a1f44af24f2bb6cad826935a51bcb3d",
         ],
         Ok(()),
+    )]
+    #[case::image_from_dockerio_with_any_tag_part_of_the_allow_list(
+        vec![
+            "nginx:1.21",
+            "docker.io/library/nginx:1.21",
+        ],
+        vec!["nginx"],
+        Ok(()),
+    )]
+    #[case::image_with_any_tag_part_of_the_allow_list(
+        vec!["quay.io/coreos/etcd:v3.4.12"],
+        vec!["quay.io/coreos/etcd"],
+        Ok(()),
+    )]
+    #[case::image_with_implicit_tag_latest_part_of_the_allow_list(
+        vec!["nginx", "quay.io/coreos/etcd"],
+        vec!["nginx", "quay.io/coreos/etcd"],
+        Ok(()),
+    )]
+    #[case::image_with_implicit_tag_latest_not_part_of_the_allow_list(
+        vec!["coreos/etcd", "coreos/etcd:v3.4.12"],
+        vec!["quay.io/coreos/etcd"],
+        Err(
+            vec![
+                "coreos/etcd",
+                "coreos/etcd:v3.4.12",
+            ]),
     )]
     fn validation_with_image_allow_constraint(
         #[case] images: Vec<&str>,
