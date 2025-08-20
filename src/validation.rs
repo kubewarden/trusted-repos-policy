@@ -119,52 +119,51 @@ fn is_allowed_image(image_ref: &ImageRef, settings: &Settings) -> bool {
     // Keep in mind the settings are validate to prevent both allow and reject
     // lists to be populated at the same time
 
-    // if no configuration has been given for images, we allow all
+    // Accept/Reject if the allow/reject list contains either:
+    // - The full image ref (exact match)
+    //
+    // - The image repository, without registry, nor tag, nor digest:
+    //   allow "nginx" matches "nginx:1.21", "nginx:latest", "docker.io/library:nginx:1.21"
+    //
+    // - The image registry+repository, without tag nor digest:
+    //   allow "quay.io/coreos/etcd" matches "quay.io/coreos/etcd:1.21", "quay.io/coreos/etcd:latest"
+    //   allow "nginx" matches "nginx:1.21", "nginx:latest", "docker.io/library:nginx:1.21"
+
+    // If no configuration has been given for images, we allow all
     if settings.images.allow.is_empty() && settings.images.reject.is_empty() {
         return true;
     }
 
-    // if the image is explicitly rejected, it is not allowed
-    if !settings.images.reject.is_empty() && settings.images.reject.contains(image_ref) {
-        return false;
+    // helper closure for matching against repository or registry+repository
+    let matches_loose = |set: &std::collections::HashSet<ImageRef>| {
+        let contained_in_set_with_same_repo = Reference::from_str(image_ref.repository())
+            .ok()
+            .map(|r| set.contains(&ImageRef::new(r)))
+            .unwrap_or(false);
+
+        let contained_in_set_with_registry_plus_repo = {
+            let registry_repo = format!("{}/{}", image_ref.registry(), image_ref.repository());
+            Reference::from_str(&registry_repo)
+                .ok()
+                .map(|r| set.contains(&ImageRef::new(r)))
+                .unwrap_or(false)
+        };
+
+        contained_in_set_with_same_repo || contained_in_set_with_registry_plus_repo
+    };
+
+    if !settings.images.reject.is_empty() {
+        let reject = &settings.images.reject;
+        if reject.contains(image_ref) || matches_loose(reject) {
+            return false;
+        }
     }
 
     if !settings.images.allow.is_empty() {
-        // Accept if the allow list contains either:
-        // - The full image ref (exact match)
-        //
-        // - The image repository, without registry, nor tag, nor digest:
-        //   allow "nginx" matches "nginx:1.21", "nginx:latest", "docker.io/library:nginx:1.21"
-        //
-        // - The image registry+repository, without tag nor digest:
-        //   allow "quay.io/coreos/etcd" matches "quay.io/coreos/etcd:1.21", "quay.io/coreos/etcd:latest"
-        //   allow "nginx" matches "nginx:1.21", "nginx:latest", "docker.io/library:nginx:1.21"
-
         let allow = &settings.images.allow;
-
-        // Check for exact match
-        if allow.contains(image_ref) {
+        if allow.contains(image_ref) || matches_loose(allow) {
             return true;
         }
-
-        // Check for repository match (no registry, no tag, no digest)
-        let repo_ref = Reference::from_str(image_ref.repository())
-            .ok()
-            .map(ImageRef::new);
-        if let Some(repo_ref) = repo_ref {
-            if allow.contains(&repo_ref) {
-                return true;
-            }
-        }
-
-        // check for registry + repository match (no tag, no digest)
-        let registry_repo = format!("{}/{}", image_ref.registry(), image_ref.repository());
-        if let Ok(registry_repo_ref) = Reference::from_str(&registry_repo) {
-            if allow.contains(&ImageRef::new(registry_repo_ref)) {
-                return true;
-            }
-        }
-
         return false;
     }
 
@@ -480,6 +479,109 @@ mod tests {
         let settings = Settings {
             images: Images {
                 allow: settings_images_to_allow
+                    .into_iter()
+                    .map(|image| Reference::from_str(image).unwrap().into())
+                    .collect(),
+                ..Images::default()
+            },
+            ..Settings::default()
+        };
+        let expected_result = if let Err(images_not_allowed) = expected_result {
+            let images_not_allowed = images_not_allowed
+                .into_iter()
+                .map(|image| image.to_string())
+                .collect();
+            PodSpecValidationResult::NotAllowed(PodRejectionReasons {
+                images_not_allowed,
+                ..PodRejectionReasons::default()
+            })
+        } else {
+            PodSpecValidationResult::Allowed
+        };
+
+        let result = validate_images(&images, &settings);
+        assert_eq!(
+            result, expected_result,
+            r#"got: {result:?} instead of {expected_result:?}"#
+        );
+    }
+
+    #[rstest]
+    #[case::image_not_part_of_the_reject_list(
+        vec![
+            "busybox:1.0.0",
+            "docker.io/alpine:1.0.0",
+            "ghcr.io/kubewarden/policy-server:1.0.0",
+            "quay.io/bitnami/redis:6.0@sha256:82dfd9ac433eacb5f89e5bf2601659bbc78893c1a9e3e830c5ef4eb489fde079",
+            "quay.io/coreos/etcd:v3.4.12",
+        ],
+        vec![
+            "ghcr.io/kubewarden/policy-server:1.0.0",
+            "quay.io/bitnami/redis:6.0@sha256:82dfd9ac433eacb5f89e5bf2601659bbc78893c1a9e3e830c5ef4eb489fde079",
+            "quay.io/coreos/etcd:v3.4.12@sha256:7ed2739c96eb16de3d7169e2a0aa4ccf3a1f44af24f2bb6cad826935a51bcb3d",
+        ],
+        Err(
+          vec![
+            "ghcr.io/kubewarden/policy-server:1.0.0",
+            "quay.io/bitnami/redis:6.0@sha256:82dfd9ac433eacb5f89e5bf2601659bbc78893c1a9e3e830c5ef4eb489fde079",
+        ]),
+    )]
+    #[case::image_part_of_the_reject_list(
+        vec![
+            "ghcr.io/kubewarden/policy-server:1.0.0",
+            "quay.io/bitnami/redis:6.0@sha256:82dfd9ac433eacb5f89e5bf2601659bbc78893c1a9e3e830c5ef4eb489fde079",
+        ],
+        vec![
+            "ghcr.io/kubewarden/policy-server:1.0.0",
+            "quay.io/bitnami/redis:6.0@sha256:82dfd9ac433eacb5f89e5bf2601659bbc78893c1a9e3e830c5ef4eb489fde079",
+            "quay.io/coreos/etcd",
+        ],
+        Err(
+          vec![
+            "ghcr.io/kubewarden/policy-server:1.0.0",
+            "quay.io/bitnami/redis:6.0@sha256:82dfd9ac433eacb5f89e5bf2601659bbc78893c1a9e3e830c5ef4eb489fde079",
+        ]),
+    )]
+    #[case::image_from_dockerio_with_any_tag_part_of_the_reject_list(
+        vec![
+            "nginx:1.21",
+            "docker.io/library/nginx:1.21",
+        ],
+        vec!["nginx"],
+        Err(
+          vec![
+            "nginx:1.21",
+            "docker.io/library/nginx:1.21",
+        ]),
+    )]
+    #[case::image_with_any_tag_part_of_the_reject_list(
+        vec!["quay.io/coreos/etcd:v3.4.12"],
+        vec!["quay.io/coreos/etcd"],
+        Err(vec!["quay.io/coreos/etcd:v3.4.12"]),
+    )]
+    #[case::image_with_implicit_tag_latest_part_of_the_reject_list(
+        vec!["nginx", "quay.io/coreos/etcd"],
+        vec!["nginx", "quay.io/coreos/etcd"],
+        Err(
+          vec![
+            "nginx",
+            "quay.io/coreos/etcd",
+        ]),
+    )]
+    #[case::image_with_implicit_tag_latest_not_part_of_the_reject_list(
+        vec!["coreos/etcd", "coreos/etcd:v3.4.12"], // these actually are docker.io/library/coreos/etcd
+        vec!["quay.io/coreos/etcd"],
+        Ok(()),
+    )]
+    fn validation_with_image_reject_constraint(
+        #[case] images: Vec<&str>,
+        #[case] settings_images_to_reject: Vec<&str>,
+        #[case] expected_result: Result<(), Vec<&str>>,
+    ) {
+        let images: HashSet<&str> = images.into_iter().collect();
+        let settings = Settings {
+            images: Images {
+                reject: settings_images_to_reject
                     .into_iter()
                     .map(|image| Reference::from_str(image).unwrap().into())
                     .collect(),
