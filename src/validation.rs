@@ -554,6 +554,11 @@ mod tests {
             "docker.io/library/nginx:1.21",
         ]),
     )]
+    #[case::image_from_dockerio_no_match_part_of_the_reject_list(
+        vec!["quay.io/coreos/etcd"], 
+        vec!["etcd"], // this is actually docker.io/library/etcd
+        Ok(()),
+    )]
     #[case::image_with_any_tag_part_of_the_reject_list(
         vec!["quay.io/coreos/etcd:v3.4.12"],
         vec!["quay.io/coreos/etcd"],
