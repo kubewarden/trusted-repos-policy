@@ -80,3 +80,16 @@ images:
 Will allow container images like `nginx:1.21`, `nginx:latest`,
 `docker.io/library:nginx:1.21`, `quay.io/coreos/etcd:1.21`,
 `quay.io/coreos/etcd:latest`.
+
+- Only reject a well known set of images with any tag, allow the rest:
+
+```yaml
+images:
+  reject:
+    - nginx
+    - quay.io/coreos/etcd
+```
+
+Will reject container images like `nginx:1.21`, `nginx:latest`,
+`docker.io/library:nginx:1.21`, `quay.io/coreos/etcd:1.21`,
+`quay.io/coreos/etcd:latest`.
