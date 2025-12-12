@@ -1,6 +1,6 @@
 [package]
 name = "trusted-repos-policy"
-version = "2.0.3"
+version = "2.0.4"
 authors = ["Kubewarden Developers <cncf-kubewarden-maintainers@lists.cncf.io>"]
 edition = "2021"
 
